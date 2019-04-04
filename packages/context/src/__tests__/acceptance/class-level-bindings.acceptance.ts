@@ -386,8 +386,10 @@ describe('Context bindings - Injecting dependencies of classes', () => {
           .bind(STORE_KEY)
           .toClass(givenStoreClass(BindingCreationPolicy.ALWAYS_CREATE));
         const store = ctx.getSync<Store>(STORE_KEY);
-        const binding1 = store.setter('a-value');
-        const binding2 = store.setter('b-value');
+        store.setter('a-value');
+        const binding1 = ctx.getBinding(HASH_KEY);
+        store.setter('b-value');
+        const binding2 = ctx.getBinding(HASH_KEY);
         expect(binding1).to.not.exactly(binding2);
       });
 
@@ -411,8 +413,8 @@ describe('Context bindings - Injecting dependencies of classes', () => {
           .bind(STORE_KEY)
           .toClass(givenStoreClass(BindingCreationPolicy.NEVER_CREATE));
         const store = ctx.getSync<Store>(STORE_KEY);
-        const binding = store.setter('a-value');
-        expect(binding).to.exactly(hashBinding);
+        store.setter('a-value');
+        expect(ctx.getBinding(HASH_KEY)).to.exactly(hashBinding);
         expect(ctx.getSync(HASH_KEY)).to.equal('a-value');
       });
 
@@ -421,8 +423,7 @@ describe('Context bindings - Injecting dependencies of classes', () => {
           .bind(STORE_KEY)
           .toClass(givenStoreClass(BindingCreationPolicy.CREATE_IF_NOT_BOUND));
         const store = ctx.getSync<Store>(STORE_KEY);
-        const binding = store.setter('a-value');
-        expect(binding.key).to.eql(HASH_KEY.toString());
+        store.setter('a-value');
         expect(ctx.getSync(HASH_KEY)).to.equal('a-value');
       });
 
@@ -436,8 +437,8 @@ describe('Context bindings - Injecting dependencies of classes', () => {
           .bind(STORE_KEY)
           .toClass(givenStoreClass(BindingCreationPolicy.CREATE_IF_NOT_BOUND));
         const store = ctx.getSync<Store>(STORE_KEY);
-        const binding = store.setter('a-value');
-        expect(binding).to.exactly(hashBinding);
+        store.setter('a-value');
+        expect(ctx.getBinding(HASH_KEY)).to.exactly(hashBinding);
         expect(ctx.getSync(HASH_KEY)).to.equal('a-value');
       });
 

@@ -204,20 +204,16 @@ export namespace Getter {
 
 /**
  * The function injected by `@inject.setter(bindingKey)`. It sets the underlying
- * binding to a const value. Returns the `Binding` object so that the binding
- * can be further configured, such as setting it to a class with `toClass()`.
+ * binding to a constant value using `binding.to(value)`.
  *
  * For example,
  *
  * ```ts
  * setterFn('my-value');
- * setterFn().toClass(MyClass).tag('my-tag');
  * ```
- * @param value Optional value. If not provided, the underlying binding won't
- * be changed and returned as-is.
- * @returns The underlying binding object.
+ * @param value The value for the underlying binding
  */
-export type Setter<T> = (value?: T) => Binding<T>;
+export type Setter<T> = (value: T) => void;
 
 /**
  * Metadata for `@inject.binding`
@@ -418,7 +414,6 @@ function resolveAsSetter(ctx: Context, injection: Injection) {
   return function setter(value: unknown) {
     const binding = findOrCreateBindingForInjection(ctx, injection);
     binding.to(value);
-    return binding;
   };
 }
 

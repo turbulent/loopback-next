@@ -3,7 +3,7 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {Binding, Context, instantiateClass} from '@loopback/context';
+import {Context, instantiateClass} from '@loopback/context';
 import {Request} from '@loopback/rest';
 import {expect} from '@loopback/testlab';
 import {Strategy} from 'passport';
@@ -110,10 +110,7 @@ describe('AuthenticateActionProvider', () => {
       strategy.setMockUser(mockUser);
       provider = new AuthenticateActionProvider(
         () => Promise.resolve(strategy),
-        u => {
-          currentUser = u;
-          return new Binding('authentication.currentUser').to(currentUser);
-        },
+        u => (currentUser = u),
       );
       currentUser = undefined;
     }

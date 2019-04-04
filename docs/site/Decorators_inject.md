@@ -126,15 +126,15 @@ class MyControllerWithGetter {
 
 `@inject.setter` injects a setter function to set the bound value of the key.
 
-Syntax: `@inject.setter(bindingKey: string, {bindingCreation?: ...})`.
+Syntax: `@inject.setter(bindingKey: BindingAddress, {bindingCreation?: ...})`.
 
 The `setter` function injected has the following signature:
 
 ```ts
-export type Setter<T> = (value?: T) => Binding<T>;
+export type Setter<T> = (value?: T) => void;
 ```
 
-The binding is controlled by `bindingCreation` option. See
+The binding resolution/creation is controlled by `bindingCreation` option. See
 [@inject.binding](#injectbinding) for possible settings.
 
 The following example shows the usage of `@inject.setter` and the injected
@@ -155,12 +155,8 @@ export class HelloController {
 }
 ```
 
-Please note the setter function simply binds a constant value to the underlying
-binding:
-
-```ts
-this.greetingSetter('Greetings!');
-```
+Please note the setter function simply binds a `value` to the underlying binding
+using `binding.to(value)`.
 
 To set other types of value providers such as `toDynamicValue`or `toClass`, use
 `@inject.binding` instead.
@@ -173,7 +169,7 @@ binding. This is an advanced form of `@inject.setter`, which only allows to set
 a constant value (using `Binding.to(value)` behind the scene) to the underlying
 binding.
 
-Syntax: `@inject.binding(bindingKey: string, {bindingCreation?: ...})`.
+Syntax: `@inject.binding(bindingKey: BindingAddress, {bindingCreation?: ...})`.
 
 ```ts
 export class HelloController {
