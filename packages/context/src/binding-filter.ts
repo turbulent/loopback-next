@@ -10,16 +10,28 @@ import {BindingAddress} from './binding-key';
  * A function that filters bindings. It returns `true` to select a given
  * binding.
  */
-export type BindingFilter<ValueType = unknown> = (
-  binding: Readonly<Binding<ValueType>>,
-) => boolean;
+export type BindingFilter = (binding: Readonly<Binding<unknown>>) => boolean;
+
+export type BindingFilterGuard<T = unknown> = (
+  binding: Readonly<Binding<unknown>>,
+) => binding is Readonly<Binding<T>>;
+
+/**
+ * A helper function to cast a `BindingFilter` to a type guard
+ * @param filter A filter function
+ */
+export function asBindingFilterGuard<T = unknown>(
+  filter: BindingFilter,
+): BindingFilterGuard<T> {
+  return filter as BindingFilterGuard<T>;
+}
 
 /**
  * Select binding(s) by key or a filter function
  */
 export type BindingSelector<ValueType = unknown> =
   | BindingAddress<ValueType>
-  | BindingFilter<ValueType>;
+  | BindingFilter;
 
 /**
  * Type guard for binding address
@@ -35,7 +47,9 @@ export function isBindingAddress(
  * Create a binding filter for the tag pattern
  * @param tagPattern Binding tag name, regexp, or object
  */
-export function filterByTag(tagPattern: BindingTag | RegExp): BindingFilter {
+export function filterByTag<T = unknown>(
+  tagPattern: BindingTag | RegExp,
+): BindingFilter {
   if (typeof tagPattern === 'string' || tagPattern instanceof RegExp) {
     const regexp =
       typeof tagPattern === 'string'
@@ -58,7 +72,7 @@ export function filterByTag(tagPattern: BindingTag | RegExp): BindingFilter {
  * Create a binding filter from key pattern
  * @param keyPattern Binding key/wildcard, regexp, or a filter function
  */
-export function filterByKey(
+export function filterByKey<T = unknown>(
   keyPattern?: string | RegExp | BindingFilter,
 ): BindingFilter {
   if (typeof keyPattern === 'string') {

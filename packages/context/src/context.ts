@@ -7,7 +7,12 @@ import * as debugFactory from 'debug';
 import {EventEmitter} from 'events';
 import {v1 as uuidv1} from 'uuid';
 import {Binding, BindingTag} from './binding';
-import {BindingFilter, filterByKey, filterByTag} from './binding-filter';
+import {
+  asBindingFilterGuard,
+  BindingFilter,
+  filterByKey,
+  filterByTag,
+} from './binding-filter';
 import {BindingAddress, BindingKey} from './binding-key';
 import {
   ContextEventObserver,
@@ -38,7 +43,11 @@ if (!Symbol.asyncIterator) {
   // tslint:disable-next-line:no-any
   (Symbol as any).asyncIterator = Symbol.for('Symbol.asyncIterator');
 }
-// This import must happen after the polyfill
+/**
+ * This following import must happen after the polyfill. The `auto-import` by
+ * an IDE such as VSCode may move the import before the polyfill. It must be
+ * fixed manually.
+ */
 import {iterator, multiple} from 'p-event';
 
 const debug = debugFactory('loopback:context');
@@ -518,8 +527,8 @@ export class Context extends EventEmitter {
   find<ValueType = BoundValue>(
     pattern?: string | RegExp | BindingFilter,
   ): Readonly<Binding<ValueType>>[] {
-    const bindings: Readonly<Binding>[] = [];
-    const filter = filterByKey(pattern);
+    const bindings: Readonly<Binding<ValueType>>[] = [];
+    const filter = asBindingFilterGuard<ValueType>(filterByKey(pattern));
 
     for (const b of this.registry.values()) {
       if (filter(b)) bindings.push(b);
